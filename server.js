@@ -5,8 +5,7 @@ const cors = require('cors');
 
 const app = express();
 
-// 1. Configuration CORS
-// ATTENTION : Pas de slash "/" à la fin des URLs
+// 1. Configuration CORS dynamique
 const allowedOrigins = [
   "https://appel-candidatures.vercel.app",
   "https://candidatures-one.vercel.app"
@@ -14,8 +13,11 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: function (origin, callback) {
-    // Permet les requêtes sans origine (comme Postman) ou les origines dans la liste
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+    // Autorise si :
+    // 1. Pas d'origine (Postman/Mobile)
+    // 2. L'origine est dans la liste fixe
+    // 3. L'origine contient "vercel.app" (pour gérer les URLs de déploiement dynamiques)
+    if (!origin || allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
       callback(null, true);
     } else {
       callback(new Error('Action bloquée par CORS'));
