@@ -7,7 +7,7 @@ const app = express();
 // 1. Configuration CORS précise
 // On autorise ton frontend spécifique à appeler ce backend
 app.use(cors({
-  origin: ["https://appel-candidatures.vercel.app", "https://candidatures-vbs.vercel.app"],
+  origin: ["https://appel-candidatures.vercel.app", "https://candidatures-one.vercel.app/"],
   methods: ["GET", "POST"],
   credentials: true
 }));
