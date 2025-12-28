@@ -2,37 +2,27 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const path = require('path');
-const fs = require('fs');
-
 const app = express();
 
-// Créer le dossier uploads s'il n'existe pas (pour éviter l'erreur au démarrage)
-const uploadDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir);
-}
-
-// Middleware
+// 1. Middlewares de base
 app.use(cors());
 app.use(express.json());
-app.use('/uploads', express.static(uploadDir)); 
 
-// Connexion MongoDB
+// 2. Connexion MongoDB
+// Assure-toi que MONGO_URI est bien configuré dans les settings de Vercel
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ Connecté à MongoDB"))
-  .catch(err => console.error("❌ Erreur de connexion:", err));
+  .then(() => console.log("✅ MongoDB Connecté"))
+  .catch(err => console.error("❌ Erreur MongoDB:", err));
 
-// Routes
-// Utilisation directe du chemin vers ton fichier de routes
-app.use('/api/candidats', require('./routes/candidatRoutes'));
+// 3. Importation de tes routes corrigées
+const candidatRoutes = require('./routes/candidatRoutes');
+app.use('/api/candidats', candidatRoutes);
 
-// Route de test
-app.get('/', (req, res) => res.send("API Mairie des Jeunes active 🚀"));
-
-const PORT = process.env.PORT || 5000;
+// 4. IMPORTANT : Ne PAS utiliser app.listen() si tu es sur Vercel
+// Vercel gère le démarrage tout seul.
 if (process.env.NODE_ENV !== 'production') {
-  app.listen(PORT, () => console.log(`🚀 Serveur lancé sur le port ${PORT}`));
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () => console.log(`Serveur local sur le port ${PORT}`));
 }
 
 module.exports = app;
